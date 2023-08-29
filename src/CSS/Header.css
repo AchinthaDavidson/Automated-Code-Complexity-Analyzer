@@ -1,0 +1,68 @@
+/* Header.css */
+.header {
+  
+   color: white;
+   padding: 20px 20px;
+ }
+ 
+ .nav {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+ }
+ 
+ .logo {
+   font-size: 24px;
+ }
+ 
+ .menu {
+   list-style: none;
+   display: flex;
+   gap: 20px;
+ }
+ 
+ .menu.open {
+   display: flex;
+   flex-direction: column;
+ }
+ 
+ .menu a {
+   text-decoration: none;
+   color: white;
+   font-weight: bold;
+   font-size: 16px;
+   padding: 8px;
+   transition: background-color 0.3s;
+ }
+ 
+ .menu a:hover {
+   color:rgb(29,255,178);
+ }
+ 
+ .menu-icon {
+   font-size: 24px;
+   cursor: pointer;
+   display: none;
+ }
+ 
+ @media screen and (max-width: 768px) {
+   .menu {
+     display: none;
+     position: absolute;
+     top: 50px;
+     left: 0;
+     background-color: #0B1C1F;
+     width: 100%;
+     flex-direction: column;
+     z-index: 1;
+   }
+ 
+   .menu.open {
+     display: flex;
+   }
+ 
+   .menu-icon {
+     display: block;
+   }
+ }
+ 
