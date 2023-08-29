@@ -111,42 +111,42 @@ alert(code)
   //   return tokenCount;
 // }
 
-function calculateWCC(codeSnippet) {
-  // Tokenization based on guidelines
-  const tokens = codeSnippet
-    .replace(/(["'])(?:\\\1|.)*?\1/g, '') // Remove content inside quotes
-    .split(/[,\s]/)
-    .filter(token => token.length > 0);
+// function calculateWCC(codeSnippet) {
+//   // Tokenization based on guidelines
+//   const tokens = codeSnippet
+//     .replace(/(["'])(?:\\\1|.)*?\1/g, '') // Remove content inside quotes
+//     .split(/[,\s]/)
+//     .filter(token => token.length > 0);
 
-  // Token weight mapping
-  const tokenWeights = {
-    operators: ['+', '-', '*', '/', '=', '==', '===', '!=', '!==', '<', '>', '<=', '>='],
-    keywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default', 'catch', 'return','void'],
-    manipulators: ['endl', '\\n'],
-    brackets: ['(', ')', '{', '}', '[', ']','.'],
-  };
+//   // Token weight mapping
+//   const tokenWeights = {
+//     operators: ['+', '-', '*', '/', '=', '==', '===', '!=', '!==', '<', '>', '<=', '>='],
+//     keywords: ['if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default', 'catch', 'return','void'],
+//     manipulators: ['endl', '\\n'],
+//     brackets: ['(', ')', '{', '}', '[', ']','.'],
+//   };
 
-  // Calculate token size
-  let wcc = 0;
-  for (const token of tokens) {
-    let tokenSize = 0; // Default token size is 1
+//   // Calculate token size
+//   let wcc = 0;
+//   for (const token of tokens) {
+//     let tokenSize = 0; // Default token size is 1
 
-    // Check for operators, keywords, manipulators, brackets
-    if (tokenWeights.operators.includes(token)) {
-      tokenSize = 2;
-    } else if (tokenWeights.keywords.includes(token)) {
-      tokenSize = 1;
-    } else if (tokenWeights.manipulators.includes(token)) {
-      tokenSize = 2;
-    } else if (tokenWeights.brackets.includes(token)) {
-      tokenSize = 1;
-    }
+//     // Check for operators, keywords, manipulators, brackets
+//     if (tokenWeights.operators.includes(token)) {
+//       tokenSize = 2;
+//     } else if (tokenWeights.keywords.includes(token)) {
+//       tokenSize = 1;
+//     } else if (tokenWeights.manipulators.includes(token)) {
+//       tokenSize = 2;
+//     } else if (tokenWeights.brackets.includes(token)) {
+//       tokenSize = 1;
+//     }
 
-    wcc += tokenSize;
-  }
+//     wcc += tokenSize;
+//   }
 
-  return wcc;
-}
+//   return wcc;
+// }
 
 
 
