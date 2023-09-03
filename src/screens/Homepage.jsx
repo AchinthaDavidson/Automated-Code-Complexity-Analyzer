@@ -42,25 +42,33 @@ alert(code)
       reader.readAsText(file);
     });
   };
-  function calculateTokenCount(codeLine) {
-    
-    //var oprandCount = countOperands(codeLine);
-    //var methodCount = countMethods(codeLine);
 
-    var opratorCount =  countOperators(codeLine);
-    var stringCount =  countStringLiterals(codeLine)
+
+  function displayDetails(code){
+
     var variableCounts = countVariables(code);
     var extractedMethods = extractMethods(code);
 
-
     console.log("------------------------------------------------ " )
+    for (const variableName in variableCounts) {
 
-    for (const methodName in extractedMethods) {
-      const lineNumbers = extractedMethods[methodName].join(', ');
-      console.log(`Method: ${methodName}, Line Numbers: ${lineNumbers}`);
+      const count = variableCounts[variableName].count;
+      const uniqueLines = [...new Set(variableCounts[variableName].lines)];
+      console.log(`${variableName}: Count ${count}, Lines: ${uniqueLines.join(', ')}`);
+
     }
+    
+    // console.log("Method Count" )
+    // for (const methodName in extractedMethods) {
+    //   const lineNumbers = extractedMethods[methodName].join(', ');
+    //   console.log(`Method: ${methodName}, Line Numbers: ${lineNumbers}`);
+    // }
 
-
+    // console.log(" Variable Count" )
+    // for (let lineNumber in variableCounts) {
+    //   const variableCount = variableCounts[lineNumber];
+    //   console.log(`Line ${lineNumber}: Count = ${variableCount}`);
+    // }
     // for (const variableName in variableCounts) {
     //   const count = variableCounts[variableName].count;
     //   const uniqueLines = [...new Set(variableCounts[variableName].lines)];
@@ -68,58 +76,105 @@ alert(code)
     //   console.log(`${variableName}: Count ${count}, Lines: ${uniqueLines.join(', ')}`);
     // }
 
-    //console.log("Line is ---------- " + codeLine)
-    //console.log("Operator Count ----- " + opratorCount)
- 
-    //console.log("Variable Count ---------------------" )
-    //console.log("String Count ----- " + stringCount)
-    //console.log("Total Count "+tokenCount+"------------------------------------------------------------")
+  }
 
-    //console.log("Operand Count ----- " + oprandCount)
-    //console.log("Method Count ----- " + methodCount)
-    //console.log("Token Count ----- " + tokenCount)
 
-    return stringCount;
-}
 
 function countVariables(javaCode) {
+
   const variableDeclarationRegex = /\b(?:int|double|float|char|String)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=|\b)(?!args\b)/g;
-
-  // Create a map to store the number of times each variable appears and its line numbers.
   let variableCounts = {};
-
-  // Match variable declarations in the Java code using regex.
+  var variableNamesArray = [];
   const variableDeclarations = javaCode.match(variableDeclarationRegex) || [];
-
-  // Match variable usages in the Java code using regex.
   const variableUsageRegex = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
   const variableUsages = javaCode.match(variableUsageRegex) || [];
 
-  // Iterate over variable declarations and extract variable names.
   for (let declaration of variableDeclarations) {
+
     const variableName = declaration.split(/\s+/)[1];
-    variableCounts[variableName] = { count: 0, lines: [] };
+    variableNamesArray.push(variableName);
   }
 
-  // Iterate over variable usages and update counts and line numbers.
   const lines = javaCode.split('\n');
-  for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+  for (let lineNumber = 1; lineNumber < lines.length; lineNumber++) {
+
     const line = lines[lineNumber];
     const variableUsageMatches = line.match(variableUsageRegex) || [];
+    var varCount = 0;
+    let previousWord = null; // Initialize the previous word as null
 
     for (let word of variableUsageMatches) {
-      if (variableCounts.hasOwnProperty(word)) {
-        variableCounts[word].count++;
-        variableCounts[word].lines.push(lineNumber + 1);
-      }
+      
+      variableNamesArray.forEach((name) => {
+        if (name !== "args") {
+          if (word === name ) {
+
+            if ( previousWord === "int" || previousWord === "double" || previousWord === "float" || previousWord === "char" || previousWord === "String"){
+              //console.log("Declaration");
+            }else{
+              varCount += 1;
+              //console.log(" Word is : " + word)
+            }
+            if (previousWord !== null) {
+              //console.log("Previous Word: " + previousWord);
+            }
+          }
+        }
+      });
+    
+    
+      previousWord = word;
+
+      // for ( variables in variableNamesArray) {
+      //   if(variables == word){
+      //     console.log(word);
+      //   }
+      //   // variableCounts[word].count++;
+      //   // variableCounts[word].lines.push(lineNumber + 1);
+      // }
+
     }
+    console.log(" Line num : " + lineNumber + "  Var Count : " + varCount)
+
   }
 
-  // Remove "args" from the variableCounts map
-  delete variableCounts["args"];
-
-  // Return the map of variable counts and line numbers.
+  console.log(variableCounts)
   return variableCounts;
+
+}
+
+
+ 
+
+
+function calculateTokenCount(codeLine) {
+    
+  //var oprandCount = countOperands(codeLine);
+  //var methodCount = countMethods(codeLine);
+  var opreratorCount =  countOperators(codeLine);
+  var stringCount =  countStringLiterals(codeLine)
+  var variableCounts = countVariables(code);
+  var extractedMethods = extractMethods(code);
+
+
+ 
+  //console.log("Line is ---------- " + codeLine)
+
+  //console.log("Variable Count ---------------------" )
+ // console.log("String Count ----- " + stringCount)
+  //console.log("Total Count "+tokenCount+"------------------------------------------------------------")
+
+  //console.log("Operand Count ----- " + oprandCount)
+  //console.log("Method Count ----- " + methodCount)
+  //console.log("Token Count ----- " + tokenCount)
+
+  return stringCount;
+}
+
+function countStringLiterals(codeLine) {
+  const regexPattern = /("[^"]*")|('[^']*')/g;
+  const matches = codeLine.match(regexPattern) || [];
+  return matches.length;
 }
 
 function countOperators(codeLine) {
@@ -134,50 +189,27 @@ function countOperators(codeLine) {
   return numberOfOperators;
 }
 
-function countStringLiterals(codeLine) {
-  const regexPattern = /("[^"]*")|('[^']*')/g;
-  const matches = codeLine.match(regexPattern) || [];
-  return matches.length;
-}
-
-
 function extractMethods(javaCode) {
-  // Define a regular expression pattern to match method declarations
   const methodDeclarationRegex = /(?:public|private|protected|static|final)?\s+(?:\w+\s+)?\w+\s+(\w+)\s*\([^)]*\)\s*(?:throws\s+\w+(?:,\s*\w+)*)?\s*{/g;
-
-  // Match method declarations in the Java code using regex
   const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
-
-  // Create an object to store method information
   const methodInfo = {};
-
-  // Split Java code into lines
-  const lines = javaCode.split('\n');
-
-  // Iterate over method declarations and extract method names and line numbers
-  methodDeclarations.forEach((declaration) => {
+  const lines = javaCode.split("\n");
+  for (const declaration of methodDeclarations) {
     const methodName = declaration.match(/(\w+)\s*\(/)[1];
-    const lineNumber = lines.findIndex((line) => line.includes(declaration)) + 1;
+    // The line number should be the index of the line that contains the method declaration, plus 1.
+    var lineNumber = lines.findIndex((line) => line.includes(declaration)) + 1;
+    if(lineNumber == 0){
+      lineNumber = 1;
+    }
 
     if (!methodInfo[methodName]) {
       methodInfo[methodName] = [];
     }
     methodInfo[methodName].push(lineNumber);
-  });
+  }
 
   return methodInfo;
 }
-
-// function countMethods(javaCode) {
-//   // Define a regular expression pattern to match method declarations
-//   const methodDeclarationRegex = /(?:public|private|protected|static|final)?\s+(?:\w+\s+)?\w+\s+(\w+)\s*\([^)]*\)\s*(?:throws\s+\w+(?:,\s*\w+)*)?\s*{/g;
-
-//   // Match method declarations in the Java code using regex
-//   const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
-
-//   // Return the count of methods
-//   return methodDeclarations.length;
-// }
 
 
   return (
@@ -203,13 +235,14 @@ function extractMethods(javaCode) {
         <input
           type="file"
           hidden
-          accept=".txt,.js,.java,.py,.jsx" // Add accepted file types here
+          accept=".txt,.js,.java" // Add accepted file types here
           onChange={handleFileChange}
         />
       </Button>
-      <Button variant="contained" color="success" >
+      <Button variant="contained" color="success" 
+      onClick={()=>displayDetails(code)}>
           Success
-        </Button>
+      </Button>
 
         <div style={{background:"white"}}>
         <code >
