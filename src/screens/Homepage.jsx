@@ -44,74 +44,403 @@ alert(code)
   };
 
 
-  function displayDetails(code){
 
+
+
+
+
+
+
+  function displayDetails(code) {
     var variableCounts = countVariables(code);
     var extractedMethods = extractMethods(code);
-    var opCount =  countOperators(code);
-    var stringCount =  countStringLiterals(code)
+    var opCount = countOperators(code);
+    var methodCallCount = countMethodCalls(code);
+    var classCalls = countClassCalls(code);
+    var stringnNumCount = countStringLiteralsAndNumerals(code);
 
-    console.log("------------------------------------------------ " )
-   
-    stringCount.forEach(item => {
-    console.log(`Line Number: ${item.lineNumber}, String Count : ${item.count}`);
-     });
+    var mergedCounts = {}; // Create an object to store counts by line number
 
-    opCount.forEach(item => {
-    console.log(`Line Number: ${item.lineNumber}, Operator Count : ${item.numberOfOperators}`);
-     });
-  
+    console.log("------------------------------------------------ ");
 
-      variableCounts.forEach(item => {
-        console.log(`Line Number: ${item.lineNumber}, Variable Count: ${item.varCount}`);
+    // Merge counts for String Literals and Numerals
+    stringnNumCount.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].literalCount += item.count;
+        mergedCounts[lineNumber].total += item.count;
     });
-    
-      
-    //   console.log("Method Count" )
-    //   for (const methodName in extractedMethods) {
-    //     const count = 2;
-    //     const lineNumbers = extractedMethods[methodName].join(', ');
-    //     console.log(`Method: ${methodName}, Line Numbers: ${lineNumbers}, Count : ${count}`);
-    //   }
 
-    //   console.log(" Variable Count" )
-    //   for (let lineNumber in variableCounts) {
-    //     const variableCount = variableCounts[lineNumber];
-    //     console.log(`Line ${lineNumber}: Count = ${variableCount}`);
-    //   }
-    //   for (const variableName in variableCounts) {
-    //     const count = variableCounts[variableName].count;
-    //     const uniqueLines = [...new Set(variableCounts[variableName].lines)];
-    
-    //     console.log(`${variableName}: Count ${count}, Lines: ${uniqueLines.join(', ')}`);
-    // }
+    // Merge counts for Method Calls
+    methodCallCount.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].methodCallCount += item.dotCount;
+        mergedCounts[lineNumber].total += item.dotCount;
+    });
 
+    // Merge counts for Class Calls
+    classCalls.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].classCallCount += 4;
+        mergedCounts[lineNumber].total += 4;
+    });
+
+    // Merge counts for Operators
+    opCount.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].operatorCount += item.numberOfOperators;
+        mergedCounts[lineNumber].total += item.numberOfOperators;
+    });
+
+    // Merge counts for Variables
+    variableCounts.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].variableCount += item.varCount;
+        mergedCounts[lineNumber].total += item.varCount;
+    });
+
+    // Merge counts for Extracted Methods
+    extractedMethods.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0, // Add a field for method count
+            };
+        }
+        mergedCounts[lineNumber].methodCount += item.returnVal;
+        mergedCounts[lineNumber].total += item.returnVal;
+    });
+
+    console.log("Merged Counts by Line Number:");
+    for (const lineNumber in mergedCounts) {
+        const counts = mergedCounts[lineNumber];
+        console.log(`Line Number: ${counts.lineNumber}, Total Count: ${counts.total}`);
+        console.log(`  Literal Count: ${counts.literalCount}`);
+        console.log(`  Method Call Count: ${counts.methodCallCount}`);
+        console.log(`  Class Call Count: ${counts.classCallCount}`);
+        console.log(`  Operator Count: ${counts.operatorCount}`);
+        console.log(`  Variable Count: ${counts.variableCount}`);
+        console.log(`  Method Count: ${counts.methodCount}`);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   function displayDetails(code) {
+
+//     var variableCounts = countVariables(code);
+//     var extractedMethods = extractMethods(code);
+//     var opCount = countOperators(code);
+//     var methodCallCount = countMethodCalls(code);
+//     var classCalls = countClassCalls(code);
+//     var stringnNumCount = countStringLiteralsAndNumerals(code);
+
+//     extractedMethods.forEach(item => {
+//       console.log(`Line Number: ${item.lineNumber}, Method Name : ${item.returnVal}`);
+//   });
+
+//     var mergedCounts = {}; // Create an object to store counts by line number
+
+//     console.log("------------------------------------------------ ");
+
+//     // Merge counts for String Literals and Numerals
+//     stringnNumCount.forEach(item => {
+//         const lineNumber = item.lineNumber;
+//         if (!mergedCounts[lineNumber]) {
+//             mergedCounts[lineNumber] = {
+//                 lineNumber,
+//                 total: 0,
+//                 literalCount: 0,
+//                 methodCallCount: 0,
+//                 classCallCount: 0,
+//                 operatorCount: 0,
+//                 variableCount: 0,
+//             };
+//         }
+//         mergedCounts[lineNumber].literalCount += item.count;
+//         mergedCounts[lineNumber].total += item.count;
+//     });
+
+//     // Merge counts for Method Calls
+//     methodCallCount.forEach(item => {
+//         const lineNumber = item.lineNumber;
+//         if (!mergedCounts[lineNumber]) {
+//             mergedCounts[lineNumber] = {
+//                 lineNumber,
+//                 total: 0,
+//                 literalCount: 0,
+//                 methodCallCount: 0,
+//                 classCallCount: 0,
+//                 operatorCount: 0,
+//                 variableCount: 0,
+//             };
+//         }
+//         mergedCounts[lineNumber].methodCallCount += item.dotCount;
+//         mergedCounts[lineNumber].total += item.dotCount;
+//     });
+
+//     // Merge counts for Class Calls
+//     classCalls.forEach(item => {
+//         const lineNumber = item.lineNumber;
+//         if (!mergedCounts[lineNumber]) {
+//             mergedCounts[lineNumber] = {
+//                 lineNumber,
+//                 total: 0,
+//                 literalCount: 0,
+//                 methodCallCount: 0,
+//                 classCallCount: 0,
+//                 operatorCount: 0,
+//                 variableCount: 0,
+//             };
+//         }
+//         mergedCounts[lineNumber].classCallCount += item.methodCall;
+//         mergedCounts[lineNumber].total += item.methodCall;
+//     });
+
+//     // Merge counts for Operators
+//     opCount.forEach(item => {
+//         const lineNumber = item.lineNumber;
+//         if (!mergedCounts[lineNumber]) {
+//             mergedCounts[lineNumber] = {
+//                 lineNumber,
+//                 total: 0,
+//                 literalCount: 0,
+//                 methodCallCount: 0,
+//                 classCallCount: 0,
+//                 operatorCount: 0,
+//                 variableCount: 0,
+//             };
+//         }
+//         mergedCounts[lineNumber].operatorCount += item.numberOfOperators;
+//         mergedCounts[lineNumber].total += item.numberOfOperators;
+//     });
+
+//     // Merge counts for Variables
+//     variableCounts.forEach(item => {
+//         const lineNumber = item.lineNumber;
+//         if (!mergedCounts[lineNumber]) {
+//             mergedCounts[lineNumber] = {
+//                 lineNumber,
+//                 total: 0,
+//                 literalCount: 0,
+//                 methodCallCount: 0,
+//                 classCallCount: 0,
+//                 operatorCount: 0,
+//                 variableCount: 0,
+//             };
+//         }
+//         mergedCounts[lineNumber].variableCount += item.varCount;
+//         mergedCounts[lineNumber].total += item.varCount;
+//     });
+
+//     console.log("Merged Counts by Line Number:");
+//     for (const lineNumber in mergedCounts) {
+//         const counts = mergedCounts[lineNumber];
+//         console.log(`Line Number: ${counts.lineNumber}, Total Count: ${counts.total}`);
+//         console.log(`  Literal Count: ${counts.literalCount}`);
+//         console.log(`  Method Call Count: ${counts.methodCallCount}`);
+//         console.log(`  Class Call Count: ${counts.classCallCount}`);
+//         console.log(`  Operator Count: ${counts.operatorCount}`);
+//         console.log(`  Variable Count: ${counts.variableCount}`);
+//     }
+
+   
+        
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  function countStringLiteralsAndNumerals(javaCode) {
+    const codeLines = javaCode.split('\n');
+    const stringLiteralsAndNumeralsCount = [];
+  
+    for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
+      const line = codeLines[lineNumber];
+      const regexPattern = /("[^"]*")|('[^']*')|(\b\d+(\.\d+)?\b)/g; // Updated pattern
+  
+      const matches = line.match(regexPattern) || [];
+     
+      stringLiteralsAndNumeralsCount.push({
+        lineNumber: lineNumber ,
+        count: matches.length,
+      });
+    }
+   // console.log(stringLiteralsAndNumeralsCount)
+    return stringLiteralsAndNumeralsCount;
   }
 
+  function countMethodCalls(javaCode) {
+    const codeLines = javaCode.split('\n');
+    const dotCountByLine = [];
+  
+    for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
+      const line = codeLines[lineNumber];
+      let dotCount = 0;
+  
+      // Use a regular expression to find dots and words before and after them
+      const dotMatches = line.match(/\./g);
+  
+      // Check if any non-integer word exists before or after the dot
+      const dotMatchesWithWords = line.match(/(\w+)\.(\w+)/g);
+      if (dotMatchesWithWords) {
+        dotMatchesWithWords.forEach(match => {
+          const [wordBeforeDot, wordAfterDot] = match.split('.');
+          const isWordBeforeInt = !isNaN(parseInt(wordBeforeDot));
+          const isWordAfterInt = !isNaN(parseInt(wordAfterDot));
 
+          if (!isWordBeforeInt && !isWordAfterInt) {
+            if(wordBeforeDot==="System"){
+              if(wordAfterDot==="out" || wordAfterDot==="print"){
+                dotCount = 5;
+              }
+            }else{
+              if (dotMatches) {
+                dotCount = dotMatches.length;
+              }
+            }
+          }
+        });
+      }
+  
+      dotCountByLine.push({
+        lineNumber: lineNumber ,
+        dotCount: dotCount
+      });
+    }
+  
+    //console.log(dotCountByLine);
+    return dotCountByLine;
+  }
 
-function calculateTokenCount(codeLine) {
-    
-  //var oprandCount = countOperands(codeLine);
-  //var methodCount = countMethods(codeLine);
-  var opreratorCount =  countOperators(codeLine);
-  var stringCount =  countStringLiterals(codeLine)
-  var variableCounts = countVariables(code);
-  var extractedMethods = extractMethods(code);
+//ok
+function countClassCalls(javaCode) {
+  const codeLines = javaCode.split('\n');
+  const methodCalls = [];
 
+  for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
+    const line = codeLines[lineNumber];
+    const regexPattern = /("[^"]*")|('[^']*')|\w+\s*\(\s*\)/g;
+    const matches = line.match(regexPattern) || [];
 
- 
-  //console.log("Line is ---------- " + codeLine)
+    for (const match of matches) {
+      if (!match.startsWith('"') && !match.startsWith("'")) {
+        methodCalls.push({
+          lineNumber: lineNumber, // Adding 1 to match typical line numbering
+          methodCall: match.trim(),
+        });
+      }
+    }
+  }
 
-  //console.log("Variable Count ---------------------" )
- // console.log("String Count ----- " + stringCount)
-  //console.log("Total Count "+tokenCount+"------------------------------------------------------------")
-
-  //console.log("Operand Count ----- " + oprandCount)
-  //console.log("Method Count ----- " + methodCount)
-  //console.log("Token Count ----- " + tokenCount)
-
-  return stringCount;
+  return methodCalls;
 }
 
 //ok
@@ -178,22 +507,26 @@ function countVariables(javaCode) {
     const line = lines[lineNumber];
     const variableUsageMatches = line.match(variableUsageRegex) || [];
     var varCount = 0;
-    let previousWord = null; // Initialize the previous word as null
+    let previousWord = null;
+    const nextWordAfterCurrent = [];
 
     for (let word of variableUsageMatches) {
       
       variableNamesArray.forEach((name) => {
         if (name !== "args") {
           if (word === name ) {
-
             if ( previousWord === "int" || previousWord === "double" || previousWord === "float" || previousWord === "char" || previousWord === "String"){
-              //console.log("Declaration");
+              const nextIndex = variableUsageMatches.indexOf(word) + 1;
+              var nextWord = variableUsageMatches[nextIndex]
+              // console.log("declared")
+              // console.log(nextWord)
+              // console.log(variableDeclarations)
             }else{
               varCount += 1;
-              //console.log(" Word is : " + word)
+              // console.log(" Word is : " + word)
             }
             if (previousWord !== null) {
-              //console.log("Previous Word: " + previousWord);
+              // console.log("Previous Word: " + previousWord);
             }
           }
         }
@@ -202,34 +535,41 @@ function countVariables(javaCode) {
       previousWord = word;
     }
    // console.log(" Line num : " + lineNumber + "  Var Count : " + varCount)
+  // console.log(nextWordAfterCurrent)
     variableCounts.push({lineNumber,varCount})
   }
  // console.log(variableCounts)
   return variableCounts;
 }
 
-//ok
 function extractMethods(javaCode) {
-  const methodDeclarationRegex = /(?:public|private|protected|static|final)?\s+(?:\w+\s+)?\w+\s+(\w+)\s*\([^)]*\)\s*(?:throws\s+\w+(?:,\s*\w+)*)?\s*{/g;
+  const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
   const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
-  const methodInfo = {};
+  const methodInfo = [];
   const lines = javaCode.split("\n");
-  for (const declaration of methodDeclarations) {
-    const methodName = declaration.match(/(\w+)\s*\(/)[1];
-    // The line number should be the index of the line that contains the method declaration, plus 1.
-    var lineNumber = lines.findIndex((line) => line.includes(declaration)) + 1;
-    if(lineNumber == 0){
-      lineNumber = 1;
-    }
+  var returnVal ;
 
-    if (!methodInfo[methodName]) {
-      methodInfo[methodName] = [];
+
+  for ( let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+
+    const line = lines[lineNumber];
+    const isClassDeclaration = line.match(/\bclass\b/);
+    const methodDeclarationMatch = line.match(/(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/);
+    
+    if (methodDeclarationMatch) {
+      returnVal = 2;
+    } else {
+      returnVal = 0;
     }
-    methodInfo[methodName].push(lineNumber);
+    methodInfo.push({lineNumber,returnVal});
   }
-
   return methodInfo;
 }
+
+
+
+
+
 
   return (
     <>
