@@ -283,9 +283,218 @@ for (const lineNumber in mergedCounts) {
   tableData.push(lineData);
 }
 
-console.table(tableData);
+  //console.table(tableData);
+  var classData = findClasses(code);
+   console.log(classData)
+  var inheritnceData = assignInheritanceLevelsToCode(classData, code)
+
+   //console.log(inheritnceData)
+
+
+  //console.log(controlStatments)
+
+
+
+
+
+
+
+
+
+
 
 }
+
+
+
+
+
+
+function findClasses(javaCode) {
+  // Initialize the result array
+  let result = [];
+
+  // Split the code by line breaks
+  let lines = javaCode.split(/\r?\n/);
+
+  // Use a regular expression to match class declarations
+  let classDeclarationRegex = /^\s*(public|private|protected)?\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*(extends\s+([A-Za-z_][A-Za-z0-9_]*))?\s*(implements\s+([A-Za-z_][A-Za-z0-9_,\s]*))?(\s*{)?/;
+
+  let wi = 1; // Initialize the wi variable to 0
+
+  // Loop through the lines
+  for (let i = 0; i < lines.length; i++) {
+    // Get the current line
+    let line = lines[i];
+
+    // Check if the line matches a class declaration
+    let match = line.match(classDeclarationRegex);
+
+    if (match) {
+      // Check if the class declaration has an opening brace
+      if (line.includes("{")) {
+        // Initialize the brace count
+        let braceCount = 1;
+
+        // Loop through the following lines to find the matching closing brace
+        for (let j = i + 1; j < lines.length; j++) {
+          let innerLine = lines[j];
+          if (innerLine.includes("{")) {
+            braceCount++;
+          }
+          if (innerLine.includes("}")) {
+            braceCount--;
+          }
+
+          // If the brace count reaches zero, it's the end of the class declaration
+          if (braceCount === 0) {
+            result.push({
+              className: match[2], // Extract the class name
+              start: i,
+              end: j,
+              wi: wi, // Set the wi attribute for the class
+            });
+
+            wi++; // Increment wi for the next class
+            break;
+          }
+        }
+      } else {
+        // If the class declaration does not have an opening brace on the same line,
+        // it's a single-line class declaration
+        result.push({
+          className: match[2], // Extract the class name
+          start: i,
+          end: i,
+          wi: wi, // Set the wi attribute for the class
+        });
+
+        wi++; // Increment wi for the next class
+      }
+    }
+  }
+
+  return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function findClasses(javaCode) {
+//   // Initialize the result array
+//   let result = [];
+
+//   // Split the code by line breaks
+//   let lines = javaCode.split(/\r?\n/);
+
+//   // Use a regular expression to match class declarations
+//   let classDeclarationRegex = /^\s*(public|private|protected)?\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*(extends\s+([A-Za-z_][A-Za-z0-9_]*))?\s*(implements\s+([A-Za-z_][A-Za-z0-9_,\s]*))?(\s*{)?/;
+
+//   // Loop through the lines
+//   for (let i = 0; i < lines.length; i++) {
+//     // Get the current line
+//     let line = lines[i];
+
+//     // Check if the line matches a class declaration
+//     let match = line.match(classDeclarationRegex);
+
+//     if (match) {
+//       // Check if the class declaration has an opening brace
+//       if (line.includes("{")) {
+//         // Initialize the brace count
+//         let braceCount = 1;
+
+//         // Loop through the following lines to find the matching closing brace
+//         for (let j = i + 1; j < lines.length; j++) {
+//           let innerLine = lines[j];
+//           if (innerLine.includes("{")) {
+//             braceCount++;
+//           }
+//           if (innerLine.includes("}")) {
+//             braceCount--;
+//           }
+
+//           // If the brace count reaches zero, it's the end of the class declaration
+//           if (braceCount === 0) {
+//             result.push({
+//               className: match[2], // Extract the class name
+//               start: i,
+//               end: j,
+//             });
+//             break;
+//           }
+//         }
+//       } else {
+//         // If the class declaration does not have an opening brace on the same line,
+//         // it's a single-line class declaration
+//         result.push({
+//           className: match[2], // Extract the class name
+//           start: i,
+//           end: i,
+//         });
+//       }
+//     }
+//   }
+
+//   return result;
+// }
+
+
+function assignInheritanceLevelsToCode(classDatas, javaCode) {
+  const lines = javaCode.split("\n");
+  const codeLevels = [];
+
+  lines.forEach((line, lineNumber) => {
+    let wi = 0;
+
+
+    classDatas.forEach((classDeclared) => {
+      if (lineNumber >= classDeclared.start  && lineNumber <= classDeclared.end ) {
+        wi += classDeclared.wi || 0;
+      }
+    });
+
+    // Check if the line contains only brackets, comments, or else statements with brackets
+    if (/^(\s*[\{\}\[\]();]|\/\/|\/\*|\*\/|else\s*{)/.test(line)) {
+      wi = 0;
+    }
+
+    codeLevels.push({ lineNumber, wi });
+  });
+
+  return codeLevels;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function assignLevelsToCode(controlStructuresArray, javaCode) {
@@ -314,6 +523,8 @@ function assignLevelsToCode(controlStructuresArray, javaCode) {
 
   return codeLevels;
 }
+
+
 
 
 function findControlStatements(javaCode) {
@@ -614,12 +825,10 @@ function extractMethods(javaCode) {
         mode="javascript" // Change to the desired language mode
         theme="dracula" // Change to the desired theme
         value={code}
-      onChange={handleCodeChange}
+        onChange={handleCodeChange}
         name="code-editor"
         editorProps={{ $blockScrolling: true }}
         showPrintMargin={true}
-
-
       />
 
       <Button
