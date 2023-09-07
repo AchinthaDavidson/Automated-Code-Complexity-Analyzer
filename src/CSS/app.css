@@ -1,5 +1,16 @@
 *{
-    margin:0;
+    margin: 0;
     padding:0;
-  
+    height: auto;
+    /* background-image:  'linear-gradient(to bottom right,#080F17, #134136)'; */
+    z-index: 0;
 }
+
+body {
+    margin: 0; /* Remove default margin to fill the whole viewport */
+    padding: 0; /* Remove default padding */
+    background-image: url('back1.jpg');
+    background-size: cover; /* Adjust the size as needed */
+    background-repeat: no-repeat; /* Prevent image repetition */
+    background-attachment: fixed; /* Keep the image fixed while scrolling */
+  }

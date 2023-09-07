@@ -95,28 +95,6 @@ function setNewcode(code){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div className="code-container">
       <div className="code-input">
