@@ -1,51 +1,55 @@
-/* CodeLanguageDetection.css */
 
-.root{
-  background-image:  url('back1.jpg');
-}
 
 .code-container {
   display: flex;
   flex-direction: column;
   /* align-items: stretch; */
-  /* padding-top: 8%;
-  padding: 4%; */
+  /* padding-top: 3%; */
+  padding-left: 4%;
+  padding-right: 4%;
+  /* background-image: url(../assect/Untitled-12-l-1.png); */
+  background-repeat: no-repeat;
+  background-position: center;
+
   
 }
 
-.mainClass{
+/* .mainClass{
   background-image:  url('back1.jpg');
-}
+} */
 
-.code-input textarea {
-  width: 100%;
+.code-input  {
+  min-height:60%;
   padding: 10px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 20%;
   margin-bottom: 20px;
 }
+.code-output  {
 
-.code-output {
-  width: 100%;
-  overflow-x: auto;
-  background-image: url(../assect/Untitled-12-l-1.png);
-  background-repeat: no-repeat;
-  margin-left: 10%;
-  opacity:0.5;
-}
-
-.output-content {
+  /* padding-top: 4.5%; */
+  max-height: 500px;
+  overflow-y: visible;
+  margin-top: 4.5%;
   background-color: white;
-  padding: 20px;
   border-radius: 5px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+ 
+}
+
+
+.output-content {
+ 
+  /* padding: 20px; */
+
+  /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); */
 }
 .file-upload-button {
   background-color: #4a90e2; /* Change to your desired color */
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 0px 20px;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
 }
@@ -75,25 +79,48 @@
 
 table {
   border-collapse: collapse;
+ 
   width: 100%;
 }
 
 th, td {
   text-align: left;
   padding: 8px;
+  
 }
 
 tr:nth-child(even){background-color: #f7f1f1}
 tr:nth-child(odd){background-color: #c7eeb0}
 
 th {
-  background-color: #aa0494;
+  background-color: #195b20;
   color: white;
 }
 
-tr:hover {background-color: coral;}
+tr:hover {background-color: rgb(129, 145, 138);}
 
 
-.table-container {
-  overflow-y: scroll; /* Enable vertical scroll bar if content overflows */
+/* .table-container { */
+  /* overflow-y: scroll; Enable vertical scroll bar if content overflows */
+
+/* } */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }

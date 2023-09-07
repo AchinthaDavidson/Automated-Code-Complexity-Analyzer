@@ -3,6 +3,8 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/theme-dracula';
 import { Button } from '@mui/material';
 import '../CSS/home.css'
+import Header from'../Component/Header'
+import Footer from'../Component/Footer' 
 //const JavaParser = require('java-parser');
 
 function Home() {
@@ -30,7 +32,7 @@ function Home() {
     if (file) {
       const fileContent = await readFileContent(file);
       setCode(fileContent);
-    alert(code)
+   
       const codeLiness = code.split('\n');
       setCodeLines(codeLiness);
     
@@ -736,10 +738,11 @@ function Home() {
 
 return (
   <>
-
-
-  <Button
-      variant="contained"
+  <Header/>
+   <div className="code-container">
+      <div className="code-input">
+      <Button
+      variant="outlined"
       component="label"
       color='secondary'
       style={{ margin:"10px"}}
@@ -752,6 +755,21 @@ return (
         onChange={handleFileChange}
       />
     </Button>
+
+      <AceEditor
+        mode="javascript" // Change to the desired language mode
+        theme="dracula" // Change to the desired theme
+        value={code}
+        onChange={handleCodeChange}
+        name="code-editor"
+        editorProps={{ $blockScrolling: true }}
+        showPrintMargin={true}
+        style={{width:"95%"}}
+       
+      
+    />
+
+
 
 
     <Button variant="contained" color="success" 
@@ -768,39 +786,12 @@ return (
         >
         Clear All
     </Button>
-    
-
-    <div className='mainClass' style={{display:"flex", height:"100%", margin:"10px", zIndex:"500" }}>
-
-      <div style={{ background:"red", flex:"1" ,margin:"10px"}}>
-
-      <AceEditor
-        mode="javascript" // Change to the desired language mode
-        theme="dracula" // Change to the desired theme
-        value={code}
-        onChange={handleCodeChange}
-        name="code-editor"
-        editorProps={{ $blockScrolling: true }}
-        showPrintMargin={true}
-        style={{width:"100%", height:"160%"}}
-      
-    />
-
-{/* 
-'Line': codeString,
-        'S Count': counts.total,
-        'W Control ': counts.W_control,
-        'W Inheritance': counts.W_inheritance,
-        'W Nesting ': counts.W_nesting,
-        'W Total Count': counts.W_total,
-        'WC Count': counts.W_total * counts.total */}
-
 
       </div>
-      <div style={{flex:"1",height:"500px", width:"60%" ,margin:"10px"  , backgroundImage:'url("back1.jpg")',}}>
 
-        <div className='table-container' style={{width:"100%", flex:"1", height:"160%" }}>
-
+      <div className="code-output" style={{overflowY:"auto"}}>
+      
+        
           <table >
           <tr>
             
@@ -848,27 +839,20 @@ return (
 
           </table>
 
-        </div>
 
-      </div>
 
-    </div>
-
+        
    
 
-  
+       
+
+      </div>
+      {/* <label htmlFor="">{totalWCCount}</label> */}
+    </div>
 
 
-      {/* <div style={{background:"red" , width:"auto" , height:"auto"}}>
-        <code >
-              {codeLines.map((line, index) => (
-                <div key={index}>{line} ........... {calculateTokenCount(line)}</div>
-              ))}
-              
-          </code>
 
-      </div> */}
-
+<Footer/>
   </>
 )
 }

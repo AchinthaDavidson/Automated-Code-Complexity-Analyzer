@@ -1,7 +1,7 @@
 // Header.js
 import React, { useState, useEffect } from 'react';
 import '../CSS/Header.css';
-
+import logo from "../assect/MicrosoftTeams-image (1).png"
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -12,7 +12,9 @@ const Header = () => {
     return (
       <header className="header">
         <nav className="nav">
-          <div className="logo">My Logo</div>
+          <div className="logo"> <img src={logo} style={{
+            height:"100px"
+          }}/></div>
           <div
             className={`menu-icon ${isMenuOpen ? 'open' : ''}`}
             onClick={toggleMenu}
@@ -28,9 +30,7 @@ const Header = () => {
             <li>
               <a href="#about">About</a>
             </li>
-            <li>
-              <a href="#services">Services</a>
-            </li>
+           
             <li>
               <a href="#contact">Contact</a>
             </li>
