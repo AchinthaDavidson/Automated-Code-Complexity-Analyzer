@@ -1,65 +1,99 @@
 /* CodeLanguageDetection.css */
 
+.root{
+  background-image:  url('back1.jpg');
+}
+
 .code-container {
-    display: flex;
-    flex-direction: column;
-    /* align-items: stretch; */
-    padding-top: 8%;
-    padding: 4%;
-    
-  }
+  display: flex;
+  flex-direction: column;
+  /* align-items: stretch; */
+  /* padding-top: 8%;
+  padding: 4%; */
   
-  .code-input textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20%;
-    margin-bottom: 20px;
-  }
-  
-  .code-output {
-    width: 100%;
-    overflow-x: auto;
-    background-image: url(../assect/Untitled-12-l-1.png);
-    background-repeat: no-repeat;
-    margin-left: 10%;
+}
+
+.mainClass{
+  background-image:  url('back1.jpg');
+}
+
+.code-input textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20%;
+  margin-bottom: 20px;
+}
+
+.code-output {
+  width: 100%;
+  overflow-x: auto;
+  background-image: url(../assect/Untitled-12-l-1.png);
+  background-repeat: no-repeat;
+  margin-left: 10%;
   opacity:0.5;
+}
+
+.output-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.file-upload-button {
+  background-color: #4a90e2; /* Change to your desired color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.file-upload-button:hover {
+  background-color: #3574c2; /* Change to a slightly darker shade for hover */
+  transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+  .code-container {
+    flex-direction: row;
   }
-  
-  .output-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+  .code-input {
+    width: 50%;
+    padding-right: 10px;
   }
-  .file-upload-button {
-    background-color: #4a90e2; /* Change to your desired color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
+
+  .code-output {
+    width: 50%;
+    overflow: hidden;
   }
-  
-  .file-upload-button:hover {
-    background-color: #3574c2; /* Change to a slightly darker shade for hover */
-    transform: scale(1.05);
-  }
-  
-  @media (min-width: 768px) {
-    .code-container {
-      flex-direction: row;
-    }
-  
-    .code-input {
-      width: 50%;
-      padding-right: 10px;
-    }
-  
-    .code-output {
-      width: 50%;
-      overflow: hidden;
-    }
-  }
-  
+}
+
+
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f7f1f1}
+tr:nth-child(odd){background-color: #c7eeb0}
+
+th {
+  background-color: #aa0494;
+  color: white;
+}
+
+tr:hover {background-color: coral;}
+
+
+.table-container {
+  overflow-y: scroll; /* Enable vertical scroll bar if content overflows */
+}

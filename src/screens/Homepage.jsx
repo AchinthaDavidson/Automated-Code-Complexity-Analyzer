@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/theme-dracula';
 import { Button } from '@mui/material';
-const JavaParser = require('java-parser');
+import '../CSS/home.css'
+//const JavaParser = require('java-parser');
 
 function Home() {
   const [code, setCode] = useState('');
@@ -10,6 +11,10 @@ function Home() {
   const [detectedLanguage, setDetectedLanguage] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [cw,setcw] = useState();
+  const [resultData, setResultData] = useState([])
+  const [cbtot,setCbtot] = useState("")
+  var wccCount = 0;
+  var totalWCCount = 0;
   // get cord into line
   const handleCodeChange = (newCode) => {
     setCode(newCode);
@@ -25,7 +30,7 @@ function Home() {
     if (file) {
       const fileContent = await readFileContent(file);
       setCode(fileContent);
-alert(code)
+    alert(code)
       const codeLiness = code.split('\n');
       setCodeLines(codeLiness);
     
@@ -60,7 +65,8 @@ alert(code)
       var classData = findClasses(code);
       var inheritnceData = assignInheritanceLevelsToCode(classData, code)
       const tableData = [];
-      var mergedCounts = {}; // Create an object to store counts by line number
+      var mergedCounts = {};
+       // Create an object to store counts by line number
     
       // Merge counts for String Literals and Numerals
       stringnNumCount.forEach(item => {
@@ -289,25 +295,27 @@ alert(code)
       mergedCounts[lineNumber].W_inheritance += item.wi;
       mergedCounts[lineNumber].W_total += item.wi;
   });
-    var wccCount = 0;
+   
     for (const lineNumber in mergedCounts) {
       const counts = mergedCounts[lineNumber];
       var codeString = lines[counts.lineNumber].replace(/\t/g, '    ').replace(/\r/g, '');
       wccCount +=  counts.W_total * counts.total
       const lineData = {
         'Line': codeString,
-        'S Count': counts.total,
-        'W Control ': counts.W_control,
-        'W Inheritance': counts.W_inheritance,
-        'W Nesting ': counts.W_nesting,
-        'W Total Count': counts.W_total,
-        'WC Count': counts.W_total * counts.total
+        'S_Count': counts.total,
+        'W_Control': counts.W_control,
+        'W_Inheritance': counts.W_inheritance,
+        'W_Nesting': counts.W_nesting,
+        'W_Total': counts.W_total,
+        'WC_Count': counts.W_total * counts.total
       };
       tableData.push(lineData);
     }
 
-    console.table(tableData);
-    console.log("WCC Value for the given code is :  " + wccCount)
+    //console.table(tableData);
+    setCbtot(wccCount);
+    setResultData(tableData);
+    //console.log("WCC Value for the given code is :  " + wccCount)
 
   }
 
@@ -317,7 +325,6 @@ alert(code)
 
     lines.forEach((line, lineNumber) => {
       let wi = 0;
-
 
       classDatas.forEach((classDeclared) => {
         if (lineNumber >= classDeclared.start  && lineNumber <= classDeclared.end ) {
@@ -502,7 +509,6 @@ alert(code)
 
     return result;
   }
-
 
   function countLines(text) {
     return text.split('\n').length;
@@ -722,24 +728,21 @@ alert(code)
     return methodInfo;
   }
 
+  function clearAll(e){
+    setResultData(null)
+    setCode("")
+
+  }
+
 return (
   <>
-    <AceEditor
-      mode="javascript" // Change to the desired language mode
-      theme="dracula" // Change to the desired theme
-      value={code}
-    onChange={handleCodeChange}
-      name="code-editor"
-      editorProps={{ $blockScrolling: true }}
-      showPrintMargin={true}
 
 
-    />
-
-    <Button
-      variant="outlined"
+  <Button
+      variant="contained"
       component="label"
-      color='success'
+      color='secondary'
+      style={{ margin:"10px"}}
     >
       Upload File
       <input
@@ -749,19 +752,122 @@ return (
         onChange={handleFileChange}
       />
     </Button>
+
+
     <Button variant="contained" color="success" 
-    onClick={()=>displayDetails(code)}>
+        onClick={()=>displayDetails(code)}
+        style={{margin:"10px"}}
+        >
         Calculate WCC
     </Button>
 
-      <div style={{background:"white"}}>
-      <code >
-            {/* {codeLines.map((line, index) => (
-              <div key={index}>{line} ........... {calculateTokenCount(line)}</div>
-            ))} */}
-        </code>
+
+    <Button variant="contained" color="error" 
+        onClick={(e)=>clearAll(e)}
+        style={{margin:"10px"}}
+        >
+        Clear All
+    </Button>
+    
+
+    <div className='mainClass' style={{display:"flex", height:"100%", margin:"10px", zIndex:"500" }}>
+
+      <div style={{ background:"red", flex:"1" ,margin:"10px"}}>
+
+      <AceEditor
+        mode="javascript" // Change to the desired language mode
+        theme="dracula" // Change to the desired theme
+        value={code}
+        onChange={handleCodeChange}
+        name="code-editor"
+        editorProps={{ $blockScrolling: true }}
+        showPrintMargin={true}
+        style={{width:"100%", height:"160%"}}
+      
+    />
+
+{/* 
+'Line': codeString,
+        'S Count': counts.total,
+        'W Control ': counts.W_control,
+        'W Inheritance': counts.W_inheritance,
+        'W Nesting ': counts.W_nesting,
+        'W Total Count': counts.W_total,
+        'WC Count': counts.W_total * counts.total */}
+
 
       </div>
+      <div style={{flex:"1",height:"500px", width:"60%" ,margin:"10px"  , backgroundImage:'url("back1.jpg")',}}>
+
+        <div className='table-container' style={{width:"100%", flex:"1", height:"160%" }}>
+
+          <table >
+          <tr>
+            
+              <th>Line </th>
+              <th>S Count</th>
+              <th>W Control Structure</th>
+              <th>W Inheritance</th>
+              <th>W Nesting</th>
+              <th>W Total</th>
+              <th>WC Count</th>
+              
+            </tr>
+
+
+            {resultData !== null && resultData.length > 0 ? (
+            	resultData.map((index) => {
+            // Calculate running total of WC_Count
+              totalWCCount += index.WC_Count;
+
+              return (
+                <tr key={index}> 
+                  <td> {index.Line} </td>
+                  <td style={{textAlign:"center"}}> {index.S_Count} </td>
+                  <td style={{textAlign:"center"}}> {index.W_Control} </td>
+                  <td style={{textAlign:"center"}}> {index.W_Inheritance} </td>
+                  <td style={{textAlign:"center"}}> {index.W_Nesting} </td>
+                  <td style={{textAlign:"center"}}> {index.W_Total} </td>
+                  <td style={{textAlign:"center"}}> {index.WC_Count} </td>
+                </tr>
+              );
+            })
+            ) : (
+            <tr>
+              <td colSpan="8">No data available</td>
+            </tr>
+          )}
+
+            <tr  style={{background:"pink"}}>   
+            
+              <td colSpan={6}>  Total CB value is </td>
+              <td style={{textAlign:"center"}}> {totalWCCount}</td> 
+            
+            
+            </tr>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+   
+
+  
+
+
+      {/* <div style={{background:"red" , width:"auto" , height:"auto"}}>
+        <code >
+              {codeLines.map((line, index) => (
+                <div key={index}>{line} ........... {calculateTokenCount(line)}</div>
+              ))}
+              
+          </code>
+
+      </div> */}
 
   </>
 )
