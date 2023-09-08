@@ -13,11 +13,11 @@ function About() {
     <div className="form-container1">
       <h1 className="title-main1">Welcome to CODELYZER - Redefining Code Complexity Measurement</h1>
       <p className="text-main1">
-      Welcome to CODELYZER, your go-to platform for revolutionizing the way you measure and understand code complexity. In the dynamic landscape of software development, the need for precise and comprehensive code evaluation has never been more critical. That's where CODELYZER steps in, poised to redefine your coding experience by introducing the Improved CB Value - a groundbreaking metric inspired by the Weighted Composite Complexity concept.
+     <center>Welcome to CODELYZER, your go-to platform for revolutionizing the way you measure and understand code complexity. In the dynamic landscape of software development, the need for precise and comprehensive code evaluation has never been more critical. That's where CODELYZER steps in, poised to redefine your coding experience by introducing the Improved CB Value - a groundbreaking metric inspired by the Weighted Composite Complexity concept.
 
       <br/>At CODELYZER, we understand that the modern coding paradigm is characterized by its intricacies and nuances, which often elude conventional code complexity measurement methods. To address this gap, we have developed the Improved CB Value (ICB), a cutting-edge approach that takes into account an array of factors to provide you with a more accurate representation of your code's intricacy.
 
-Our commitment to enhancing your coding journey is underscored by the comprehensive factors that the ICB measure encompasses:
+Our commitment to enhancing your coding journey is underscored by the comprehensive factors that the ICB measure encompasses: </center>
 
 <br/><br/><b>Pointers and References:</b> In the quest to optimize memory usage, pointers and references are indispensable tools. However, their inclusion in a program can significantly elevate its complexity. Surprisingly, conventional complexity measures like the CB value fail to quantify the intricacies introduced by these fundamental features.
 
