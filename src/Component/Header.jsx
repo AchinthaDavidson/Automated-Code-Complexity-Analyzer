@@ -25,14 +25,14 @@ const Header = () => {
           </div>
           <ul className={`menu ${isMenuOpen ? 'open' : ''}`}>
             <li>
-              <a href="#home">Home</a>
+              <a href="/">HOME</a>
             </li>
             <li>
-              <a href="#about">About</a>
+              <a href="/about">ABOUT</a>
             </li>
            
             <li>
-              <a href="#contact">Contact</a>
+              <a href="/contact">CONTACT US</a>
             </li>
           </ul>
         </nav>

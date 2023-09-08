@@ -17,12 +17,12 @@ return(
             <Link to="/">Home</Link>
            
                
-                <a href="#">About</a>
+                <a href="/about">About</a>
               
                 <Link to="/contact">Contact Us</Link>
                 
             </p>
-            {/* <p class="nsbm">NSBM Green University Town</p> */}
+            <p class="nsbm">Codelyzer © 2023</p>
 
         </div>
         <div class="footer-c">
@@ -31,21 +31,21 @@ return(
                 <p>
                 SLIIT,<br />
                    New Kandy Rd,<br />
-                    Malabe Sri Lanka.
+                    Malabe, Sri Lanka.
                 </p>
             </div>
 
             <div>
                 <ion-icon name="call"></ion-icon>
                 <p>
-                    +94 11 544 5000 <br /> +94 71 244 5000
+                    +94 11 123 4567 <br /> +94 71 123 4567
                 </p>
             </div>
 
 
             <div>
                 <ion-icon name="mail"></ion-icon>
-                <p><a href="" target="_blank">inquiries@codeliyzer.lk</a></p>
+                <p><a href="" target="_blank">inquiries@codelyzer.lk</a></p>
             </div>
 
         </div>
@@ -56,10 +56,10 @@ return(
                 NSBM prides itself on being a <br />forward-thinking entitiy,with the <br />constant drive to push boundaries */}
             </p>
             <div class="footericons">
-                <a href="https://www.facebook.com/nsbm.lk" target="_blank"><ion-icon name="logo-facebook"><FaFacebook/></ion-icon></a>
-                <a href="https://www.youtube.com/channel/UCHsodhRyiuri2jD7H7nfsRg/feed" target="_blank"><ion-icon name="logo-youtube"><FaYoutube/></ion-icon></a>
-                <a href="https://lk.linkedin.com/school/nsbmgreenuniversity/" target="_blank"><ion-icon name="logo-linkedin"><FaLinkedin/></ion-icon></a>
-                <a href="https://www.instagram.com/nsbmgreenuniversity/" target="_blank"><ion-icon name="logo-instagram"><FaInstagram/></ion-icon></a>
+                <a href="https://www.facebook.com" target="_blank"><ion-icon name="logo-facebook"><FaFacebook/></ion-icon></a>
+                <a href="https://www.youtube.com" target="_blank"><ion-icon name="logo-youtube"><FaYoutube/></ion-icon></a>
+                <a href="https://lk.linkedin.com" target="_blank"><ion-icon name="logo-linkedin"><FaLinkedin/></ion-icon></a>
+                <a href="https://www.instagram.com" target="_blank"><ion-icon name="logo-instagram"><FaInstagram/></ion-icon></a>
             </div>
         </div>
 
