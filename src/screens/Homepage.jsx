@@ -776,7 +776,7 @@ return (
         onClick={()=>displayDetails(code)}
         style={{margin:"10px"}}
         >
-        Calculate WCC
+        Calculate CB Value
     </Button>
 
 
@@ -831,7 +831,7 @@ return (
 
             <tr  style={{background:"pink"}}>   
             
-              <td colSpan={6}>  Total CB value is </td>
+              <td colSpan={6}>CB value is </td>
               <td style={{textAlign:"center"}}> {totalWCCount}</td> 
             
             

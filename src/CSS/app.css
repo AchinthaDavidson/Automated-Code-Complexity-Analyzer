@@ -14,3 +14,7 @@ body {
     background-repeat: no-repeat; /* Prevent image repetition */
     background-attachment: fixed; /* Keep the image fixed while scrolling */
   }
+  iframe
+  {
+      display: none;
+  }
