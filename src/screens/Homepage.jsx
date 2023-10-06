@@ -3,24 +3,26 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/theme-dracula';
 import { Button } from '@mui/material';
 import '../CSS/home.css'
+
 import Header from'../Component/Header'
 import Footer from'../Component/Footer' 
 //const JavaParser = require('java-parser');
 
 function Home() {
-  const [code, setCode] = useState('');
   const [codeLines, setCodeLines] = useState([]);
   const [detectedLanguage, setDetectedLanguage] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [cw,setcw] = useState();
-  const [resultData, setResultData] = useState([])
   const [cbtot,setCbtot] = useState("")
+  const [cw,setcw] = useState();
+  const [code, setCode] = useState('');
+  const [resultData, setResultData] = useState([])
+ 
   var wccCount = 0;
   var totalWCCount = 0;
   // get cord into line
+
   const handleCodeChange = (newCode) => {
     setCode(newCode);
-
     const codeLiness = code.split('\n');
     setCodeLines(codeLiness);
   };
@@ -70,7 +72,8 @@ function Home() {
       var mergedCounts = {};
        // Create an object to store counts by line number
     
-      // Merge counts for String Literals and Numerals
+      // Merge counts for String Literals and Numerals-----------------------------------------------------------------------------------------------
+      var stntcount = 0
       stringnNumCount.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -92,11 +95,11 @@ function Home() {
 
               };
           }
+          stntcount +=  item.count;
           mergedCounts[lineNumber].literalCount += item.count;
           mergedCounts[lineNumber].total += item.count;
       });
 
-      // Merge counts for Method Calls
       methodCallCount.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -121,7 +124,8 @@ function Home() {
           mergedCounts[lineNumber].total += item.dotCount;
       });
 
-      // Merge counts for Class Calls
+
+     // Merge counts for Class Calls-------------------------------------------------------------------------------------------------------------------------
       classCalls.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -142,11 +146,12 @@ function Home() {
                   WC_Value : 0
               };
           }
-          mergedCounts[lineNumber].classCallCount += 4;
-          mergedCounts[lineNumber].total += 4;
+         mergedCounts[lineNumber].classCallCount += 4;
+         mergedCounts[lineNumber].total += 4;
       });
 
-      // Merge counts for Operators
+      // Merge counts for Operators -----------------------------------------------------------------------------------------------------------------------
+      var ops = 0
       opCount.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -167,11 +172,14 @@ function Home() {
                   WC_Value : 0
               };
           }
+          ops +=  item.numberOfOperators;
           mergedCounts[lineNumber].operatorCount += item.numberOfOperators;
           mergedCounts[lineNumber].total += item.numberOfOperators;
+     
       });
+   //   console.log("Operator Count ", ops)
 
-      // Merge counts for Variables
+     var varcount = 0
       variableCounts.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -192,11 +200,15 @@ function Home() {
                   WC_Value : 0
               };
           }
+          varcount +=  item.varCount;
           mergedCounts[lineNumber].variableCount += item.varCount;
           mergedCounts[lineNumber].total += item.varCount;
+        
       });
+    //  console.log("Variable  Count ",varcount)
 
       // Merge counts for Extracted Methods
+      var methodcounts = 0
       extractedMethods.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -217,10 +229,15 @@ function Home() {
                   WC_Value : 0
               };
           }
+          methodcounts +=  item.returnVal;
           mergedCounts[lineNumber].methodCount += item.returnVal;
           mergedCounts[lineNumber].total += item.returnVal;
       });
 
+     // console.log("Method Count ",methodcounts)
+
+      //control word cpunt ---------------------------------------------------------------------------------------------------------
+      var controlwordcount = 0
       controlWordCount.forEach(item => {
         const lineNumber = item.lineNumber;
         if (!mergedCounts[lineNumber]) {
@@ -242,9 +259,12 @@ function Home() {
                 
             };
         }
+        controlwordcount +=  item.count;
         mergedCounts[lineNumber].controlWordCount += item.count;
         mergedCounts[lineNumber].total += item.count;
+       
       });
+     // console.log("Control word Count ", controlwordcount)
 
       assingLevel.forEach(item => {
         const lineNumber = item.lineNumber;
@@ -314,8 +334,8 @@ function Home() {
       tableData.push(lineData);
     }
 
-    //console.table(tableData);
-    setCbtot(wccCount);
+  //  console.table(tableData);
+   // setCbtot(wccCount);
     setResultData(tableData);
     //console.log("WCC Value for the given code is :  " + wccCount)
 
@@ -516,9 +536,6 @@ function Home() {
     return text.split('\n').length;
   }
 
-  function countLinesBefore(text, index) {
-    return countLines(text.substring(0, index));
-  }
 
   //ok
   function countStringLiteralsAndNumerals(javaCode) {
@@ -562,7 +579,7 @@ function Home() {
 
             if (!isWordBeforeInt && !isWordAfterInt) {
               if(wordBeforeDot==="System"){
-                if(wordAfterDot==="out" || wordAfterDot==="print"){
+                if(wordAfterDot==="out"){
                   dotCount = 5;
                 }
               }else{
@@ -584,28 +601,31 @@ function Home() {
       return dotCountByLine;
     }
 
-  //ok
+
+
   function countClassCalls(javaCode) {
     const codeLines = javaCode.split('\n');
-    const methodCalls = [];
-
+    const classCalls = [];
+  
+    const regexPattern = /\bnew\s+([\w$]+)\s*\([^)]*\)/g;
+  
     for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
       const line = codeLines[lineNumber];
-      const regexPattern = /("[^"]*")|('[^']*')|\w+\s*\(\s*\)/g;
-      const matches = line.match(regexPattern) || [];
-
-      for (const match of matches) {
-        if (!match.startsWith('"') && !match.startsWith("'")) {
-          methodCalls.push({
-            lineNumber: lineNumber, // Adding 1 to match typical line numbering
-            methodCall: match.trim(),
-          });
-        }
+      let match;
+  
+      while ((match = regexPattern.exec(line)) !== null) {
+        const classCall = match[1];
+        classCalls.push({
+          lineNumber: lineNumber , // Adding 1 to match typical line numbering
+          classCall: classCall,
+        });
       }
     }
-
-    return methodCalls;
+  
+    //console.log(classCalls);
+    return classCalls;
   }
+  
 
   //ok
   function countControlWords(javaCode) {
@@ -622,6 +642,7 @@ function Home() {
         count: matches.length,
       });
     }
+   // console.log(controlKeywordsCount)
     return controlKeywordsCount;
   }
 
@@ -645,6 +666,7 @@ function Home() {
       opCount.push({lineNumber, numberOfOperators})
       // console.log(`Line ${lineNumber + 1}: Number of Operators - ${numberOfOperators}`);
     }
+
     return opCount
   }
 
@@ -701,34 +723,39 @@ function Home() {
     // console.log(nextWordAfterCurrent)
       variableCounts.push({lineNumber,varCount})
     }
-  // console.log(variableCounts)
+   //console.log(variableCounts)
     return variableCounts;
   }
-
-  //ok
+  
   function extractMethods(javaCode) {
     const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
     const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
     const methodInfo = [];
     const lines = javaCode.split("\n");
-    var returnVal ;
-
-
-    for ( let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-
+  
+    for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
       const line = lines[lineNumber];
-      const isClassDeclaration = line.match(/\bclass\b/);
       const methodDeclarationMatch = line.match(/(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/);
       
+      let returnVal = 0
+  
       if (methodDeclarationMatch) {
-        returnVal = 2;
-      } else {
-        returnVal = 0;
-      }
-      methodInfo.push({lineNumber,returnVal});
+        if (line.includes("public static void main")){
+          returnVal = 4
+        }else{
+          returnVal = 2
+        }
+      } 
+
+      methodInfo.push({ lineNumber, returnVal });
     }
+  
+    console.log(methodInfo);
     return methodInfo;
   }
+  
+
+  
 
   function clearAll(e){
     setResultData(null)
@@ -769,9 +796,6 @@ return (
       
     />
 
-
-
-
     <Button variant="contained" color="success" 
         onClick={()=>displayDetails(code)}
         style={{margin:"10px"}}
@@ -791,10 +815,8 @@ return (
 
       <div className="code-output" style={{overflowY:"auto"}}>
       
-        
           <table >
           <tr>
-            
               <th>Line </th>
               <th>S Count</th>
               <th>W Control Structure</th>
@@ -802,24 +824,22 @@ return (
               <th>W Nesting</th>
               <th>W Total</th>
               <th>WC Count</th>
-              
             </tr>
 
-
             {resultData !== null && resultData.length > 0 ? (
-            	resultData.map((index) => {
+            	resultData.map((item,index) => {
             // Calculate running total of WC_Count
-              totalWCCount += index.WC_Count;
+              totalWCCount += item.WC_Count;
 
               return (
                 <tr key={index}> 
-                  <td> {index.Line} </td>
-                  <td style={{textAlign:"center"}}> {index.S_Count} </td>
-                  <td style={{textAlign:"center"}}> {index.W_Control} </td>
-                  <td style={{textAlign:"center"}}> {index.W_Inheritance} </td>
-                  <td style={{textAlign:"center"}}> {index.W_Nesting} </td>
-                  <td style={{textAlign:"center"}}> {index.W_Total} </td>
-                  <td style={{textAlign:"center"}}> {index.WC_Count} </td>
+                  <td> {item.Line} </td>
+                  <td style={{textAlign:"center"}}> {item.S_Count} </td>
+                  <td style={{textAlign:"center"}}> {item.W_Control} </td>
+                  <td style={{textAlign:"center"}}> {item.W_Inheritance} </td>
+                  <td style={{textAlign:"center"}}> {item.W_Nesting} </td>
+                  <td style={{textAlign:"center"}}> {item.W_Total} </td>
+                  <td style={{textAlign:"center"}}> {item.WC_Count} </td>
                 </tr>
               );
             })
@@ -834,23 +854,11 @@ return (
               <td colSpan={6}>CB value is </td>
               <td style={{textAlign:"center"}}> {totalWCCount}</td> 
             
-            
             </tr>
-
           </table>
-
-
-
-        
-   
-
-       
-
       </div>
       {/* <label htmlFor="">{totalWCCount}</label> */}
     </div>
-
-
 
 <Footer/>
   </>
