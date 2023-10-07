@@ -16,10 +16,12 @@ function Home() {
   const [cw,setcw] = useState();
   const [code, setCode] = useState('');
   const [resultData, setResultData] = useState([])
+  const [totICB,setTotICB] = useState('')
 
 
   var wccCount = 0;
   var totalWCCount = 0;
+  
   // get cord into line
 
   const handleCodeChange = (newCode) => {
@@ -57,24 +59,17 @@ function Home() {
   async function displayDetails(code) { 
 
       const lines = code.split("\n")
-
       var variableCounts = countVariables(code)
       var extractedMethods = extractMethods(code)
       var opCount = countOperators(code)
       var methodCallCount = countMethodCalls(code)
-    
       var classDetails = findClasses(code)
-
       var threadDetails = threadidentifier(countClassCalls(code),classDetails )
-
       var stringnNumCount = countStringLiteralsAndNumerals(code)
       var controlWordCount = countControlWords(code)
-
       var controlStatments  = findControlStatements(code).sort ( (a,b) => a.start - b.start)
       var assingLevel = assignLevelsToCode(controlStatments,code)
-
       var inheritnceData = assignInheritanceLevelsToCode(classDetails, code)
-
       const tableData = []
       var mergedCounts = {}
        // Create an object to store counts by line number
@@ -331,8 +326,6 @@ function Home() {
     }
 
   //  console.table(tableData);
-    
-   // console.log("WCC Value for the given code is :  " + wccCount)
 
    await new Promise(resolve => {
     setTimeout(() => {
@@ -342,9 +335,7 @@ function Home() {
   })
 
   
-
   }
-
 
 
   function identifyRecursiveMethods(javaCode,tableData) {
@@ -424,15 +415,12 @@ function Home() {
       }
     })
 
-   totalWCCount += extras
-   console.log(totalWCCount)
+
+   setTotICB(extras)
    setResultData(tableData);
  
   }
   
-
-
-
   
   function extractMethods(javaCode) {
     const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
@@ -895,7 +883,7 @@ function Home() {
   function clearAll(e){
     setResultData(null)
     setCode("")
-
+    setTotICB("")
   }
 
 
@@ -965,6 +953,7 @@ return (
             {resultData !== null && resultData.length > 0 ? (
             	resultData.map((item,index) => {
             // Calculate running total of WC_Count
+    
               totalWCCount += item.WC_Count;
 
               return (
@@ -987,8 +976,8 @@ return (
 
             <tr  style={{background:"pink"}}>   
             
-              <td colSpan={6}>CB value is </td>
-              <td style={{textAlign:"center"}}> {totalWCCount}</td> 
+              <td colSpan={6}>ICB value is </td>
+              <td style={{textAlign:"center"}}> {parseInt(totalWCCount) + (totICB)}</td> 
             
             </tr>
           </table>
