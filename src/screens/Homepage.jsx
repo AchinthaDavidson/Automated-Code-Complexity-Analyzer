@@ -16,7 +16,8 @@ function Home() {
   const [cw,setcw] = useState();
   const [code, setCode] = useState('');
   const [resultData, setResultData] = useState([])
- 
+
+
   var wccCount = 0;
   var totalWCCount = 0;
   // get cord into line
@@ -53,23 +54,29 @@ function Home() {
     });
   };
 
-  function displayDetails(code) {
+  async function displayDetails(code) { 
 
-      const lines = code.split("\n");
-      var variableCounts = countVariables(code);
-      var extractedMethods = extractMethods(code);
-      var opCount = countOperators(code);
-      var methodCallCount = countMethodCalls(code);
-      var classCalls = countClassCalls(code);
-      var stringnNumCount = countStringLiteralsAndNumerals(code);
-      var controlWordCount = countControlWords(code);
-      var controlStatments  = findControlStatements(code)
-      controlStatments.sort ( (a,b) => a.start - b.start);
+      const lines = code.split("\n")
+
+      var variableCounts = countVariables(code)
+      var extractedMethods = extractMethods(code)
+      var opCount = countOperators(code)
+      var methodCallCount = countMethodCalls(code)
+    
+      var classDetails = findClasses(code)
+
+      var threadDetails = threadidentifier(countClassCalls(code),classDetails )
+
+      var stringnNumCount = countStringLiteralsAndNumerals(code)
+      var controlWordCount = countControlWords(code)
+
+      var controlStatments  = findControlStatements(code).sort ( (a,b) => a.start - b.start)
       var assingLevel = assignLevelsToCode(controlStatments,code)
-      var classData = findClasses(code);
-      var inheritnceData = assignInheritanceLevelsToCode(classData, code)
-      const tableData = [];
-      var mergedCounts = {};
+
+      var inheritnceData = assignInheritanceLevelsToCode(classDetails, code)
+
+      const tableData = []
+      var mergedCounts = {}
        // Create an object to store counts by line number
     
       // Merge counts for String Literals and Numerals-----------------------------------------------------------------------------------------------
@@ -124,34 +131,33 @@ function Home() {
           mergedCounts[lineNumber].total += item.dotCount;
       });
 
+      threadDetails.forEach(item => {
+        const lineNumber = item.lineNumber;
+        if (!mergedCounts[lineNumber]) {
+            mergedCounts[lineNumber] = {
+                lineNumber,
+                total: 0,
+                literalCount: 0,
+                methodCallCount: 0,
+                classCallCount: 0,
+                operatorCount: 0,
+                variableCount: 0,
+                methodCount: 0,
+                controlWordCount : 0,
+                W_inheritance : 0,
+                W_nesting : 0,
+                W_control : 0,
+                W_total : 0 ,
+                WC_Value : 0
+            };
+        }
 
-     // Merge counts for Class Calls-------------------------------------------------------------------------------------------------------------------------
-      classCalls.forEach(item => {
-          const lineNumber = item.lineNumber;
-          if (!mergedCounts[lineNumber]) {
-              mergedCounts[lineNumber] = {
-                  lineNumber,
-                  total: 0,
-                  literalCount: 0,
-                  methodCallCount: 0,
-                  classCallCount: 0,
-                  operatorCount: 0,
-                  variableCount: 0,
-                  methodCount: 0,
-                  controlWordCount : 0,
-                  W_inheritance : 0,
-                  W_nesting : 0,
-                  W_control : 0,
-                  W_total : 0 ,
-                  WC_Value : 0
-              };
-          }
-         mergedCounts[lineNumber].classCallCount += 4;
-         mergedCounts[lineNumber].total += 4;
-      });
+          mergedCounts[lineNumber].classCallCount += item.value;
+          mergedCounts[lineNumber].total += item.value;
+      
+    });
 
       // Merge counts for Operators -----------------------------------------------------------------------------------------------------------------------
-      var ops = 0
       opCount.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -172,14 +178,13 @@ function Home() {
                   WC_Value : 0
               };
           }
-          ops +=  item.numberOfOperators;
+ 
           mergedCounts[lineNumber].operatorCount += item.numberOfOperators;
           mergedCounts[lineNumber].total += item.numberOfOperators;
-     
+          mergedCounts[lineNumber].W_control += item.wc
+          mergedCounts[lineNumber].W_total += item.wc
       });
-   //   console.log("Operator Count ", ops)
 
-     var varcount = 0
       variableCounts.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -200,15 +205,12 @@ function Home() {
                   WC_Value : 0
               };
           }
-          varcount +=  item.varCount;
           mergedCounts[lineNumber].variableCount += item.varCount;
           mergedCounts[lineNumber].total += item.varCount;
         
       });
-    //  console.log("Variable  Count ",varcount)
 
       // Merge counts for Extracted Methods
-      var methodcounts = 0
       extractedMethods.forEach(item => {
           const lineNumber = item.lineNumber;
           if (!mergedCounts[lineNumber]) {
@@ -229,12 +231,9 @@ function Home() {
                   WC_Value : 0
               };
           }
-          methodcounts +=  item.returnVal;
           mergedCounts[lineNumber].methodCount += item.returnVal;
           mergedCounts[lineNumber].total += item.returnVal;
       });
-
-     // console.log("Method Count ",methodcounts)
 
       //control word cpunt ---------------------------------------------------------------------------------------------------------
       var controlwordcount = 0
@@ -264,7 +263,6 @@ function Home() {
         mergedCounts[lineNumber].total += item.count;
        
       });
-     // console.log("Control word Count ", controlwordcount)
 
       assingLevel.forEach(item => {
         const lineNumber = item.lineNumber;
@@ -291,7 +289,6 @@ function Home() {
         mergedCounts[lineNumber].W_control+= item.wc;
         mergedCounts[lineNumber].W_total += item.wn + item.wc;
     });
-
     
     inheritnceData.forEach(item => {
       const lineNumber = item.lineNumber;
@@ -321,7 +318,6 @@ function Home() {
     for (const lineNumber in mergedCounts) {
       const counts = mergedCounts[lineNumber];
       var codeString = lines[counts.lineNumber].replace(/\t/g, '    ').replace(/\r/g, '');
-      wccCount +=  counts.W_total * counts.total
       const lineData = {
         'Line': codeString,
         'S_Count': counts.total,
@@ -335,12 +331,157 @@ function Home() {
     }
 
   //  console.table(tableData);
-   // setCbtot(wccCount);
-    setResultData(tableData);
-    //console.log("WCC Value for the given code is :  " + wccCount)
+    
+   // console.log("WCC Value for the given code is :  " + wccCount)
+
+   await new Promise(resolve => {
+    setTimeout(() => {
+      identifyRecursiveMethods(code,tableData);
+      resolve();
+    }, 0);
+  })
+
+  
 
   }
 
+
+
+  function identifyRecursiveMethods(javaCode,tableData) {
+    const result = [];
+    
+    // Split the code into lines
+    const lines = javaCode.split(/\r?\n/);
+  
+    // Regular expression to match method definitions
+    const methodDefinitionRegex = /^\s*(public|private|protected)?\s*\w+\s+(\w+)\s*\([^\)]*\)\s*\{/;
+  
+    // Loop through the lines
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+  
+      // Check if the line matches a method definition
+      const methodMatch = line.match(methodDefinitionRegex);
+  
+      if (methodMatch) {
+        const methodName = methodMatch[2];
+        const methodNameWithParentheses = methodName + "\\(";
+  
+        // Check if the method name is used within the method body
+        const methodBody = lines.slice(i + 1).join("\n");
+        
+        // Use a regular expression to find potential recursive calls
+        const recursiveCallRegex = new RegExp(`${methodNameWithParentheses}[^;]*;`, 'g');
+        const recursiveCalls = methodBody.match(recursiveCallRegex);
+  
+        // If potential recursive calls are found, determine the end line
+        if (recursiveCalls && recursiveCalls.length > 1) {
+          let braceCount = 1;
+          let endLine = i + 1;
+  
+          // Loop through lines to count opening and closing curly braces
+          for (let j = i + 1; j < lines.length; j++) {
+            const innerLine = lines[j];
+            endLine = j + 1; // Update the end line
+  
+            // Count opening curly braces
+            if (innerLine.includes("{")) {
+              braceCount++;
+            }
+  
+            // Count closing curly braces
+            if (innerLine.includes("}")) {
+              braceCount--;
+            }
+  
+            // If the closing curly brace matches the opening curly brace count, it's the end of the method
+            if (braceCount === 0) {
+              break;
+            }
+          }
+  
+          result.push({
+            methodName: methodName,
+            startLine: i + 1,
+            endLine: endLine
+          });
+        }
+      }
+    }
+
+    var extras = 0;
+
+    result.forEach(recFunc=>{
+  
+      for (let lineNumber = recFunc.startLine+1; lineNumber <= recFunc.endLine; lineNumber++) {
+      
+        const rowData = tableData[lineNumber - 1]; 
+        var wTot =  parseInt(rowData.W_Total) 
+        var sTot =  parseInt(rowData.S_Count)
+        var tot =  wTot * sTot
+        extras += tot
+    
+      }
+    })
+
+   totalWCCount += extras
+   console.log(totalWCCount)
+   setResultData(tableData);
+ 
+  }
+  
+
+
+
+  
+  function extractMethods(javaCode) {
+    const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
+    const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
+    const methodInfo = [];
+    const lines = javaCode.split("\n");
+  
+    for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+      const line = lines[lineNumber];
+      const methodDeclarationMatch = line.match(/(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/);
+      
+      let returnVal = 0
+  
+      if (methodDeclarationMatch) {
+        if (line.includes("public static void main")){
+          returnVal = 4
+        }else{
+          returnVal = 2
+        }
+      } 
+
+      methodInfo.push({ lineNumber, returnVal });
+    }
+  
+    //console.log(methodInfo);
+    return methodInfo;
+  }
+  
+
+  function threadidentifier(classCalls, classData){
+
+    const threadData = [];
+    var isThread = classData[0].isClassaThread
+    var className = classData[0].className
+
+    classCalls.forEach(item => {
+  
+      if(item.classCall ==="Thread"){
+        threadData.push({lineNumber:item.lineNumber ,value : 6})
+      }else if(className == item.classCall && isThread){ 
+        threadData.push({lineNumber:item.lineNumber ,value : 6})
+      }else{
+        threadData.push({lineNumber:item.lineNumber ,value : 4})
+      }
+    })
+
+    return threadData
+  }
+  
   function assignInheritanceLevelsToCode(classDatas, javaCode) {
     const lines = javaCode.split("\n");
     const codeLevels = [];
@@ -368,29 +509,30 @@ function Home() {
   function findClasses(javaCode) {
     // Initialize the result array
     let result = [];
-
+    var isClassaThread = false;
+  
     // Split the code by line breaks
     let lines = javaCode.split(/\r?\n/);
-
+  
     // Use a regular expression to match class declarations
     let classDeclarationRegex = /^\s*(public|private|protected)?\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*(extends\s+([A-Za-z_][A-Za-z0-9_]*))?\s*(implements\s+([A-Za-z_][A-Za-z0-9_,\s]*))?(\s*{)?/;
-
+  
     let wi = 1; // Initialize the wi variable to 0
-
+  
     // Loop through the lines
     for (let i = 0; i < lines.length; i++) {
       // Get the current line
       let line = lines[i];
-
+  
       // Check if the line matches a class declaration
       let match = line.match(classDeclarationRegex);
-
+  
       if (match) {
         // Check if the class declaration has an opening brace
         if (line.includes("{")) {
           // Initialize the brace count
           let braceCount = 1;
-
+  
           // Loop through the following lines to find the matching closing brace
           for (let j = i + 1; j < lines.length; j++) {
             let innerLine = lines[j];
@@ -400,16 +542,23 @@ function Home() {
             if (innerLine.includes("}")) {
               braceCount--;
             }
-
+  
             // If the brace count reaches zero, it's the end of the class declaration
             if (braceCount === 0) {
+              // Extract the class name
+              let className = match[2];
+  
+              // Check if the class implements Runnable
+              let implementsRunnable = (match[6] || '').includes('Runnable');
+  
               result.push({
-                className: match[2], // Extract the class name
+                className: className,
                 start: i,
                 end: j,
                 wi: wi, // Set the wi attribute for the class
+                isClassaThread: implementsRunnable // Set isClassaThread based on implements Runnable
               });
-
+  
               wi++; // Increment wi for the next class
               break;
             }
@@ -417,18 +566,26 @@ function Home() {
         } else {
           // If the class declaration does not have an opening brace on the same line,
           // it's a single-line class declaration
+          // Extract the class name
+          let className = match[2];
+  
+          // Check if the class implements Runnable
+          let implementsRunnable = (match[6] || '').includes('Runnable');
+  
           result.push({
-            className: match[2], // Extract the class name
+            className: className,
             start: i,
             end: i,
             wi: wi, // Set the wi attribute for the class
+            isClassaThread: implementsRunnable // Set isClassaThread based on implements Runnable
           });
-
+  
           wi++; // Increment wi for the next class
         }
       }
     }
-
+  
+   // console.log(result);
     return result;
   }
 
@@ -467,7 +624,7 @@ function Home() {
     let lines = javaCode.split(/\r?\n/);
 
     // Use regular expressions to match control statements
-    let controlStatementRegex = /^\s*(if|else if|else|for|while|do|switch|case|default)\s*\(.+\)\s*\{/;
+    let controlStatementRegex = /^\s*(if|try|else if|else|for|while|do|switch|case|default|catch)\s*\(.+\)\s*\{/;
 
     // Use a stack to keep track of the current control statements and their lines
     let stack = [];
@@ -489,6 +646,8 @@ function Home() {
           wc = 1;
         } else if (match[1] === "for" || match[1] === "while") {
           wc = 2;
+        }else if (match[1] === "catch"){
+          wc = 1;
         }
 
         // Push the type, start line, and wc to the stack
@@ -515,27 +674,25 @@ function Home() {
         if (top) {
           top.braces--;
           // If the brace count reaches zero, pop the statement from the stack and add it to the result array with its level
-          if (top.braces === 0) {
-            result.push({
-              type: top.type,
-              start: top.start,
-              end: i,
-              wn: stack.length, // The level is equal to the length of the stack
-              wc: top.wc, // Add the 'wc' attribute to the result
-            });
-            stack.pop();
+  
+            if (top.braces === 0) {
+              result.push({
+                type: top.type,
+                start: top.start,
+                end: i,
+                wn: stack.length, // The level is equal to the length of the stack
+                wc: top.wc, // Add the 'wc' attribute to the result
+              });
+              stack.pop();
+            
           }
         }
       }
     }
 
+   // console.log(result)
     return result;
   }
-
-  function countLines(text) {
-    return text.split('\n').length;
-  }
-
 
   //ok
   function countStringLiteralsAndNumerals(javaCode) {
@@ -584,7 +741,11 @@ function Home() {
                 }
               }else{
                 if (dotMatches) {
-                  dotCount =3;
+                  if(wordAfterDot==="start"){
+                    dotCount = 5
+                  }else{
+                    dotCount =3;
+                  }
                 }
               }
             }
@@ -601,8 +762,6 @@ function Home() {
       return dotCountByLine;
     }
 
-
-
   function countClassCalls(javaCode) {
     const codeLines = javaCode.split('\n');
     const classCalls = [];
@@ -616,7 +775,7 @@ function Home() {
       while ((match = regexPattern.exec(line)) !== null) {
         const classCall = match[1];
         classCalls.push({
-          lineNumber: lineNumber , // Adding 1 to match typical line numbering
+          lineNumber: lineNumber , 
           classCall: classCall,
         });
       }
@@ -626,11 +785,10 @@ function Home() {
     return classCalls;
   }
   
-
   //ok
   function countControlWords(javaCode) {
     const codeLines = javaCode.split('\n');
-    const controlKeywords = /(if|else if|for|while|do while|switch\()/g;
+    const controlKeywords = /(if|else if|for|throw|while|catch|do while|switch\()/g;
     const controlKeywordsCount = [];
 
     for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
@@ -646,28 +804,34 @@ function Home() {
     return controlKeywordsCount;
   }
 
-  //ok
   function countOperators(javaCode) {
     const codeLines = javaCode.split('\n');
     var opCount = [];
     const regexPattern = /[!=<>+\-*/%&|^~]+/g;
-
+  
     for (let lineNumber = 0; lineNumber < codeLines.length; lineNumber++) {
+      var wc = 0;
       const line = codeLines[lineNumber];
-    
+  
       const operators = line.match(regexPattern) || [];
       let numberOfOperators = operators.length;
-
-      const matches = line.match(/-\d+/g);
-
+  
+      // Check for && and || and increase wc if found
+      const matches = line.match(/&&|\|\|/g);
       if (matches) {
-        numberOfOperators -= matches.length;
+        wc += matches.length;
       }
-      opCount.push({lineNumber, numberOfOperators})
-      // console.log(`Line ${lineNumber + 1}: Number of Operators - ${numberOfOperators}`);
+  
+      const matchesNegativeNumbers = line.match(/-\d+/g);
+      if (matchesNegativeNumbers) {
+        numberOfOperators -= matchesNegativeNumbers.length;
+      }
+  
+      opCount.push({ lineNumber, numberOfOperators, wc });
     }
-
-    return opCount
+  
+   // console.log(opCount);
+    return opCount;
   }
 
   //ok
@@ -727,41 +891,13 @@ function Home() {
     return variableCounts;
   }
   
-  function extractMethods(javaCode) {
-    const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
-    const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
-    const methodInfo = [];
-    const lines = javaCode.split("\n");
-  
-    for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-      const line = lines[lineNumber];
-      const methodDeclarationMatch = line.match(/(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/);
-      
-      let returnVal = 0
-  
-      if (methodDeclarationMatch) {
-        if (line.includes("public static void main")){
-          returnVal = 4
-        }else{
-          returnVal = 2
-        }
-      } 
-
-      methodInfo.push({ lineNumber, returnVal });
-    }
-  
-    console.log(methodInfo);
-    return methodInfo;
-  }
-  
-
-  
 
   function clearAll(e){
     setResultData(null)
     setCode("")
 
   }
+
 
 return (
   <>
