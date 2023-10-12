@@ -3,7 +3,7 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/theme-dracula';
 import { Button } from '@mui/material';
 import '../CSS/home.css'
-
+import { PDFDocument, rgb } from 'pdf-lib';
 import Header from'../Component/Header'
 import Footer from'../Component/Footer' 
 //const JavaParser = require('java-parser');
@@ -13,7 +13,7 @@ function Home() {
   const [detectedLanguage, setDetectedLanguage] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [cbtot,setCbtot] = useState("")
-  const [cw,setcw] = useState();
+ const [cw,setcw] = useState();
   const [code, setCode] = useState('');
   const [resultData, setResultData] = useState([])
   const [totICB,setTotICB] = useState('')
@@ -418,9 +418,165 @@ function Home() {
 
    setTotICB(extras)
    setResultData(tableData);
+   generatePDF(tableData)
  
   }
   
+  async function generatePDF(tableData) {
+    if (resultData != null) {
+      const pdfDoc = await PDFDocument.create();
+      const marginX = 50;
+      const marginY = 100;
+      let maxLineLength = 0; // Track the maximum length of the first column
+  
+      // Calculate the maximum length of the first column (Line)
+      tableData.forEach((row) => {
+        const lineLength = row.Line.toString().length;
+        maxLineLength = Math.max(maxLineLength, lineLength);
+      });
+  
+      // Calculate the required page width based on the maximum length of the first column
+      const pageWidth =2000
+      
+      // Calculate the required page height based on the number of rows in tableData
+      const numDataRows = tableData.length;
+      const pageHeight = marginY + numDataRows * 24 + marginY; // Adjust the factor based on row height
+  
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+  
+      // Define padding for table cells
+      const cellPaddingX = 5;
+      const cellPaddingY = 2;
+  
+      // Define table settings
+      const numColumns = 7;
+      const columnWidth = (pageWidth - 2 * marginX) / numColumns;
+  
+      const drawTable = (x, y, data) => {
+        const tableX = x + cellPaddingX;
+        const tableY = y - cellPaddingY;
+        const cellWidth = columnWidth;
+        const cellHeight = 24; // Adjust the row height
+        const borderWidth = 1;
+  
+        // Draw table header
+        page.drawRectangle({
+          x: tableX,
+          y: tableY,
+          width: cellWidth * numColumns,
+          height: cellHeight,
+          color: rgb(1, 1, 1),
+          borderWidth: borderWidth,
+        });
+  
+        for (let i = 0; i < numColumns; i++) {
+          const cellX = tableX + i * cellWidth;
+          const cellText = data[0][i].toString();
+          page.drawText(cellText, {
+            x: cellX + cellPaddingX,
+            y: tableY - cellPaddingY + 5,
+            size: 14,
+            color: rgb(0, 0, 0),
+          });
+        }
+  
+        // Draw table data
+        for (let i = 1; i < data.length; i++) {
+          const rowData = data[i];
+          for (let j = 0; j < numColumns; j++) {
+            const cellX = tableX + j * cellWidth;
+            const cellY = tableY - i * cellHeight;
+            const cellText = rowData[j].toString();
+            page.drawRectangle({
+              x: cellX,
+              y: cellY,
+              width: cellWidth,
+              height: cellHeight,
+              color: rgb(1, 1, 1),
+              borderWidth: borderWidth,
+            });
+            page.drawText(cellText, {
+              x: cellX + cellPaddingX,
+              y: cellY - cellPaddingY + 5,
+              size: 12,
+              color: rgb(0, 0, 0),
+            });
+          }
+        }
+      };
+      var tot = parseInt(totalWCCount) + (totICB)
+  
+      // Define the table header
+      const headerRow = [
+        'Code Line',
+        'Number of Tokens',
+        'W c Value',
+        'W i Value',
+        'W n Value',
+        'W Total',
+        'WC Count',
+      ];
+
+      page.drawText(`Total (tot): ${tot}`, {
+        x: marginX,
+        y: marginY,
+        size: 14,
+        color: rgb(0, 0, 0),
+      });
+  
+    
+
+      // Combine header and data
+      const table = [headerRow, ...tableData.map((row) => Object.values(row))];
+  
+      // Draw the table
+      drawTable(marginX, pageHeight - marginY, table);
+
+      page.drawText('Coderlyzer ICB Value Report     ', {
+        x: marginX, // Adjust the X position as needed
+        y: pageHeight - marginY + 40, // Adjust the Y position as needed
+        size: 16, // Adjust the font size as needed
+        color: rgb(0, 0, 0), // Adjust the text color as needed
+      });
+
+
+      page.drawText(`Total ICB Value is ${tot}`, {
+        x: marginX,
+        y: marginY- 25,
+        size: 14,
+        color: rgb(0, 0, 0),
+      });
+  
+  
+      // Serialize the PDF document to bytes
+      const pdfBytes = await pdfDoc.save();
+  
+ 
+      downloadGenerator(pdfBytes);
+      //return pdfBytes;
+    }
+  }
+  
+  function downloadGenerator(pdfBytes){
+    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+    // Create a download link and trigger the download
+    const currentDate = new Date();
+    const currentTime = currentDate.toLocaleTimeString();
+    const formattedTime = currentTime.replace(/:/g, '-');
+
+
+
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(pdfBlob);
+    a.download = `CoderlyzerReport_${currentTime}.pdf`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+  }
+
   
   function extractMethods(javaCode) {
     const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
@@ -453,6 +609,7 @@ function Home() {
   function threadidentifier(classCalls, classData){
 
     const threadData = [];
+
     var isThread = classData[0].isClassaThread
     var className = classData[0].className
 
@@ -830,7 +987,7 @@ function Home() {
     var variableNamesArray = [];
     const variableDeclarations = javaCode.match(variableDeclarationRegex) || [];
     const variableUsageRegex = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
-    const variableUsages = javaCode.match(variableUsageRegex) || [];
+   // const variableUsages = javaCode.match(variableUsageRegex) || [];
 
     for (let declaration of variableDeclarations) {
 
@@ -845,7 +1002,7 @@ function Home() {
       const variableUsageMatches = line.match(variableUsageRegex) || [];
       var varCount = 0;
       let previousWord = null;
-      const nextWordAfterCurrent = [];
+      //const nextWordAfterCurrent = [];
 
       for (let word of variableUsageMatches) {
         
@@ -853,8 +1010,8 @@ function Home() {
           if (name !== "args") {
             if (word === name ) {
               if ( previousWord === "int" || previousWord === "double" || previousWord === "float" || previousWord === "char" || previousWord === "String"){
-                const nextIndex = variableUsageMatches.indexOf(word) + 1;
-                var nextWord = variableUsageMatches[nextIndex]
+               // const nextIndex = variableUsageMatches.indexOf(word) + 1;
+               // var nextWord = variableUsageMatches[nextIndex]
                 // console.log("declared")
                 // console.log(nextWord)
                 // console.log(variableDeclarations)
@@ -924,7 +1081,7 @@ return (
         onClick={()=>displayDetails(code)}
         style={{margin:"10px"}}
         >
-        Calculate CB Value
+        Calculate ICB 
     </Button>
 
 
@@ -935,11 +1092,20 @@ return (
         Clear All
     </Button>
 
+
+    {/* <Button variant="contained" color="error" 
+       onClick={(e)=>generatePDF(e)}
+        style={{margin:"10px"}}
+        >
+        Get PDF
+    </Button> */}
+
       </div>
 
       <div className="code-output" style={{overflowY:"auto"}}>
       
           <table >
+            <tbody>
           <tr>
               <th>Line </th>
               <th>S Count</th>
@@ -980,6 +1146,7 @@ return (
               <td style={{textAlign:"center"}}> {parseInt(totalWCCount) + (totICB)}</td> 
             
             </tr>
+            </tbody>
           </table>
       </div>
       {/* <label htmlFor="">{totalWCCount}</label> */}

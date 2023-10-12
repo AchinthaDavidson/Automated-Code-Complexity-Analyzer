@@ -7,13 +7,13 @@ import { Link } from "react-router-dom";
 
 function footer(){
 return(
-    <footer class="footer">
+    <footer className="footer">
         <hr />
         <br />
-        <div class="footer-l">
+        <div className="footer-l">
         <img src={logo} />
 
-            <p class="footer-links">
+            <p className="footer-links">
             <Link to="/">Home</Link>
            
                
@@ -22,10 +22,10 @@ return(
                 <Link to="/contact">Contact Us</Link>
                 
             </p>
-            <p class="nsbm">Codelyzer © 2023</p>
+            <p className="nsbm">Codelyzer © 2023</p>
 
         </div>
-        <div class="footer-c">
+        <div className="footer-c">
             <div>
                 <ion-icon name="location-sharp"></ion-icon>
                 <p>
@@ -50,12 +50,12 @@ return(
 
         </div>
 
-        <div class="footer-r">
-            <p class="about">
+        <div className="footer-r">
+            <p className="about">
                 {/* <span>Our University</span>
                 NSBM prides itself on being a <br />forward-thinking entitiy,with the <br />constant drive to push boundaries */}
             </p>
-            <div class="footericons">
+            <div className="footericons">
                 <a href="https://www.facebook.com" target="_blank"><ion-icon name="logo-facebook"><FaFacebook/></ion-icon></a>
                 <a href="https://www.youtube.com" target="_blank"><ion-icon name="logo-youtube"><FaYoutube/></ion-icon></a>
                 <a href="https://lk.linkedin.com" target="_blank"><ion-icon name="logo-linkedin"><FaLinkedin/></ion-icon></a>
