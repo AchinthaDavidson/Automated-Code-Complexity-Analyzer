@@ -55,7 +55,7 @@ function Home() {
       reader.readAsText(file);
     });
   };
-
+  //imandi
   async function displayDetails(code) { 
 
       const lines = code.split("\n")
@@ -337,7 +337,7 @@ function Home() {
   
   }
 
-
+  //chalitha
   function identifyRecursiveMethods(javaCode,tableData) {
     const result = [];
     
@@ -421,7 +421,7 @@ function Home() {
    generatePDF(tableData)
  
   }
-  
+  //ashvini
   async function generatePDF(tableData) {
     if (resultData != null) {
       const pdfDoc = await PDFDocument.create();
@@ -556,7 +556,7 @@ function Home() {
       //return pdfBytes;
     }
   }
-  
+  //ashvini
   function downloadGenerator(pdfBytes){
     const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
@@ -577,7 +577,7 @@ function Home() {
 
   }
 
-  
+  //ashvini
   function extractMethods(javaCode) {
     const methodDeclarationRegex = /(public\s+static\s+void\s+main\s*\(.*\))|((public|private|protected|static|final)?\s+\w+\s+\w+\s*\([^)]*\)\s*(throws\s+\w+(?:,\s*\w+)*)?\s*{)/g;
     const methodDeclarations = javaCode.match(methodDeclarationRegex) || [];
@@ -605,7 +605,7 @@ function Home() {
     return methodInfo;
   }
   
-
+  //isuru
   function threadidentifier(classCalls, classData){
 
     const threadData = [];
@@ -626,7 +626,7 @@ function Home() {
 
     return threadData
   }
-  
+  //chalitha
   function assignInheritanceLevelsToCode(classDatas, javaCode) {
     const lines = javaCode.split("\n");
     const codeLevels = [];
@@ -650,7 +650,7 @@ function Home() {
 
     return codeLevels;
   }
-
+  //chalitha
   function findClasses(javaCode) {
     // Initialize the result array
     let result = [];
@@ -733,7 +733,7 @@ function Home() {
    // console.log(result);
     return result;
   }
-
+  //isuru
   function assignLevelsToCode(controlStructuresArray, javaCode) {
     const lines = javaCode.split("\n");
     const codeLevels = [];
@@ -760,7 +760,7 @@ function Home() {
 
     return codeLevels;
   }
-
+  //isuru
   function findControlStatements(javaCode) {
     // Initialize the result array
     let result = [];
@@ -839,7 +839,7 @@ function Home() {
     return result;
   }
 
-  //ok
+  //imandi
   function countStringLiteralsAndNumerals(javaCode) {
     const codeLines = javaCode.split('\n');
     const stringLiteralsAndNumeralsCount = [];
@@ -859,7 +859,7 @@ function Home() {
     return stringLiteralsAndNumeralsCount;
   }
 
-  //ok
+  //ashvini
     function countMethodCalls(javaCode) {
       const codeLines = javaCode.split('\n');
       const dotCountByLine = [];
@@ -906,7 +906,7 @@ function Home() {
       //console.log(dotCountByLine);
       return dotCountByLine;
     }
-
+//imandi
   function countClassCalls(javaCode) {
     const codeLines = javaCode.split('\n');
     const classCalls = [];
@@ -930,7 +930,7 @@ function Home() {
     return classCalls;
   }
   
-  //ok
+  //isuru
   function countControlWords(javaCode) {
     const codeLines = javaCode.split('\n');
     const controlKeywords = /(if|else if|for|throw|while|catch|do while|switch\()/g;
@@ -948,7 +948,7 @@ function Home() {
    // console.log(controlKeywordsCount)
     return controlKeywordsCount;
   }
-
+  //chalitha
   function countOperators(javaCode) {
     const codeLines = javaCode.split('\n');
     var opCount = [];
@@ -979,7 +979,7 @@ function Home() {
     return opCount;
   }
 
-  //ok
+  //imandi
   function countVariables(javaCode) {
 
     const variableDeclarationRegex = /\b(?:int|double|float|char|String)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=|\b)(?!args\b)/g;
